@@ -61,15 +61,15 @@ export async function POST(req: NextRequest) {
         role: user.role 
       });
 
-      // Log login activity
-      await logActivity({
-        userId: user.id,
-        username: user.username,
-        activityType: 'login',
-        activityDescription: 'User berhasil login',
-        ipAddress: req.headers.get('x-forwarded-for') || 'unknown',
-        userAgent: req.headers.get('user-agent') || 'unknown'
-      });
+      // Log login activity - disabled due to missing tbl_activity_log table
+      // await logActivity({
+      //   userId: user.id,
+      //   username: user.username,
+      //   activityType: 'login',
+      //   activityDescription: 'User berhasil login',
+      //   ipAddress: req.headers.get('x-forwarded-for') || 'unknown',
+      //   userAgent: req.headers.get('user-agent') || 'unknown'
+      // });
 
       const response = NextResponse.json({ 
         success: true, 
