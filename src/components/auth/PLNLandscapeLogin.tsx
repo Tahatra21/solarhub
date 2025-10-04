@@ -20,21 +20,31 @@ export default function PLNLandscapeLogin() {
     setMessage('');
 
     try {
-      // Simulasi loading
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulasi validasi sederhana
-      if (username === 'admin' && password === 'admin') {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password.trim()
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
         setMessage('Login berhasil! Redirecting...');
         // Redirect ke admin dashboard
         setTimeout(() => {
           window.location.href = '/admin';
         }, 1000);
       } else {
-        setMessage('Username atau password salah');
+        setMessage(data.message || 'Login gagal');
       }
     } catch (error) {
-      setMessage('Terjadi kesalahan saat login');
+      console.error('Login error:', error);
+      setMessage('Terjadi kesalahan saat login. Silakan coba lagi.');
     } finally {
       setIsLoading(false);
     }
