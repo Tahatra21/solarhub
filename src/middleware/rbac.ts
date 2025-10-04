@@ -9,11 +9,16 @@ import { canAccessMenu, UserRole } from "@/utils/rbac";
 export function rbacMiddleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   
-  // Skip RBAC untuk public routes
+  // Skip RBAC untuk public routes dan static files
   if (pathname.startsWith('/login') || 
       pathname.startsWith('/api/login') ||
       pathname.startsWith('/_next') ||
-      pathname.startsWith('/favicon.ico')) {
+      pathname.startsWith('/favicon.ico') ||
+      pathname.startsWith('/api/me') ||
+      pathname.startsWith('/images') ||
+      pathname.startsWith('/icons') ||
+      pathname.startsWith('/fonts') ||
+      pathname.includes('.')) {
     return NextResponse.next();
   }
 
@@ -32,23 +37,34 @@ export function rbacMiddleware(req: NextRequest) {
     // Verify token dan get user info
     const decoded = verifyToken(token);
     
-    if (!decoded || !decoded.role) {
-      console.log('❌ Invalid token or missing role');
-      return NextResponse.redirect(new URL("/login", req.url));
+    if (!decoded) {
+      console.log('❌ Invalid token');
+      if (pathname.startsWith('/admin')) {
+        return NextResponse.redirect(new URL("/login", req.url));
+      }
+      return NextResponse.next();
     }
 
-    // Check role-based access
-    const userRole = decoded.role;
-    const hasAccess = canAccessMenu(userRole, pathname);
+    // Check if role exists, if not, allow access but log warning
+    if (!decoded.role) {
+      console.log('⚠️ User has no role assigned, allowing access');
+      return NextResponse.next();
+    }
 
-    if (!hasAccess) {
-      console.log(`❌ Access denied for role ${userRole} to ${pathname}`);
-      return NextResponse.redirect(new URL("/admin", req.url));
+    // Check role-based access only for admin routes
+    if (pathname.startsWith('/admin')) {
+      const userRole = decoded.role;
+      const hasAccess = canAccessMenu(userRole, pathname);
+
+      if (!hasAccess) {
+        console.log(`❌ Access denied for role ${userRole} to ${pathname}`);
+        return NextResponse.redirect(new URL("/admin", req.url));
+      }
     }
 
     // Add user role to headers for use in components
     const response = NextResponse.next();
-    response.headers.set('x-user-role', userRole);
+    response.headers.set('x-user-role', decoded.role || '');
     response.headers.set('x-user-id', decoded.id?.toString() || '');
     response.headers.set('x-user-username', decoded.username || '');
 
@@ -56,7 +72,10 @@ export function rbacMiddleware(req: NextRequest) {
 
   } catch (error) {
     console.error('RBAC Middleware Error:', error);
-    return NextResponse.redirect(new URL("/login", req.url));
+    if (pathname.startsWith('/admin')) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    return NextResponse.next();
   }
 }
 
