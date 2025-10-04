@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { generateToken } from "@/utils/auth";
 import { getDbClient, isDbConnected, testConnection } from '@/lib/database';
-import { logActivity } from '@/utils/activityLogger';
+// import { logActivity } from '@/utils/activityLogger'; // Disabled due to missing tbl_activity_log table
 
 export async function POST(req: NextRequest) {
   try {

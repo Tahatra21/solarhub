@@ -17,9 +17,13 @@ export default function AdminPage() {
         const res = await fetch("/api/me");
         const data = await res.json();
 
+        console.log('Auth check response:', data);
+
         if (!data.authenticated) {
+          console.log('Not authenticated, redirecting to login');
           router.push("/login");
         } else {
+          console.log('Authenticated, setting user:', data.user);
           setUser(data.user);
         }
       } catch (error) {
