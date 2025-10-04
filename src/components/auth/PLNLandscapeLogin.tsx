@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { Eye, EyeOff, Zap, Shield, Wifi, Database, Cloud, Cpu, Leaf, Video } from 'lucide-react';
+import { Eye, EyeOff, Zap, Wifi, Database, Cloud, Leaf, Video } from 'lucide-react';
 
 export default function PLNLandscapeLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -111,7 +111,7 @@ export default function PLNLandscapeLogin() {
           </div>
 
           {/* Right Side - Visual & Products */}
-          <div className="w-3/5 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 p-12 flex flex-col justify-between relative overflow-hidden">
+          <div className="w-3/5 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 p-12 flex flex-col justify-center relative overflow-hidden">
             {/* Animated Network Lines */}
             <div className="absolute inset-0 opacity-10">
               <svg width="100%" height="100%" className="absolute">
@@ -212,27 +212,6 @@ export default function PLNLandscapeLogin() {
                 </div>
               </div>
             </div>
-
-            {/* Bottom Stats */}
-            <div className="relative z-10 flex items-center gap-12 border-t border-white/20 pt-6">
-              <div className="flex items-center gap-3">
-                <Shield className="w-8 h-8 text-blue-200" />
-                <div>
-                  <p className="text-2xl font-bold">Secure Access</p>
-                  <p className="text-sm text-blue-100">Enterprise-grade security</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <svg className="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                <div>
-                  <p className="text-2xl font-bold">Real-time Updates</p>
-                  <p className="text-sm text-blue-100">Instant synchronization</p>
-                </div>
-              </div>
-            </div>
-
             {/* Decorative Elements */}
             <div className="absolute top-10 right-10 w-32 h-32 border-4 border-white/10 rounded-full"></div>
             <div className="absolute bottom-10 left-10 w-24 h-24 border-4 border-white/10 rounded-full"></div>
@@ -242,7 +221,7 @@ export default function PLNLandscapeLogin() {
 
       {/* Footer */}
       <div className="absolute bottom-4 left-0 right-0 text-center text-white/60 text-xs">
-        <p>© 2025 PLN Icon Plus - Digital Infrastructure Solutions</p>
+        <p>© 2025 PLN Icon Plus - Solution Architect PLN 1</p>
       </div>
     </div>
   );
