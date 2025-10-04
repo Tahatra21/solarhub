@@ -1,0 +1,507 @@
+/* Dashboard Enhanced Styles */
+
+/* Custom CSS Variables for Consistent Color Scheme - Extended Web Palette */
+:root {
+  /* Neutral & Base Colors */
+  --neutral-cream-light: #e8d1c5;
+  --neutral-cream-medium: #eddcd2;
+  --neutral-cream-soft: #fff1e6;
+  --neutral-beige-light: #f0efeb;
+  --neutral-beige-warm: #eeddd3;
+  --neutral-white: #ffffff;
+  --neutral-gray-light: #f2f2f2;
+  --neutral-gray-medium: #f0f2f2;
+  --neutral-gray-blue: #e6e7e1;
+  
+  /* Pastel Colors */
+  --pastel-mint: #84dcc6;
+  --pastel-mint-light: #a5ffd6;
+  --pastel-coral: #ffa69e;
+  --pastel-coral-bright: #ff686b;
+  --pastel-lavender: #cdb4db;
+  --pastel-pink: #ffc8dd;
+  --pastel-pink-soft: #ffafcc;
+  --pastel-blue: #bde0fe;
+  --pastel-blue-light: #a2d2ff;
+  
+  /* Soft Tones */
+  --soft-aqua: #a7e1e3;
+  --soft-green: #d3eacc;
+  --soft-yellow: #f6ed8d;
+  --soft-rose: #f9d9de;
+  --soft-mauve: #e8bcd7;
+  --soft-teal: #b0d1d8;
+  --soft-sage: #c3d3b7;
+  --soft-cream: #f4f3e1;
+  --soft-peach: #f7d0b1;
+  --soft-blush: #f9c5ca;
+  
+  /* Light Tones */
+  --light-lime: #e5e399;
+  --light-apricot: #fdddb0;
+  --light-ivory: #fcefdc;
+  --light-vanilla: #feebcb;
+  --light-peach: #ffe3d0;
+  --light-mint: #b8d2aa;
+  --light-cyan: #c5e9e7;
+  --light-butter: #feedb4;
+  --light-rose: #ffddde;
+  --light-lavender: #ddd5e7;
+  
+  /* Warm Tones */
+  --warm-pink: #ffb7c3;
+  --warm-sand: #f9dcd0;
+  --warm-honey: #feecb5;
+  --warm-apricot: #fed8b1;
+  --warm-mint: #bee8e1;
+  --warm-sage: #cce1da;
+  --warm-lemon: #f9ecb8;
+  --warm-pearl: #f6e1d0;
+  --warm-coral: #f7cbca;
+  --warm-gold: #f7ddb1;
+  
+  /* Cool Tones */
+  --cool-sky: #dbf1f7;
+  --cool-lemon: #fde7ab;
+  --cool-rose: #fabdd0;
+  --cool-periwinkle: #d9d0f0;
+  --cool-orchid: #d3acda;
+  --cool-cotton: #f7ccdf;
+  --cool-powder: #c2d9eb;
+  --cool-seafoam: #c3e7e3;
+  --cool-bisque: #fdd5b1;
+  --cool-blush: #f2d0d9;
+  
+  /* Muted Tones */
+  --muted-slate: #b8c6d9;
+  --muted-blue-gray: #8596a6;
+  --muted-sand: #f2d9d0;
+  --muted-periwinkle: #a9b5d9;
+  --muted-terracotta: #f2a477;
+  --muted-coral: #f29472;
+  --muted-rose: #f2c4c4;
+  --muted-taupe: #d9c4b8;
+  --muted-peach: #f2ddd0;
+  --muted-salmon: #f2b2ac;
+  --muted-pink: #f2a0a0;
+  
+  /* Vibrant Accents */
+  --vibrant-purple: #d9bcf2;
+  --vibrant-magenta: #fef4ff;
+  --vibrant-rose: #eebfd9;
+  --vibrant-pink: #ffa6c3;
+  --vibrant-mint: #d4f5dd;
+  --vibrant-slate: #8990b3;
+  --vibrant-peach: #ffd3c4;
+  --vibrant-periwinkle: #dee3ff;
+  --vibrant-lime: #deffc4;
+  --vibrant-sage: #a0b392;
+  
+  /* Dreamy Pastels */
+  --dreamy-blue: #a7bed3;
+  --dreamy-aqua: #c6e2e9;
+  --dreamy-lime: #f1ffc4;
+  --dreamy-peach: #ffcaaf;
+  --dreamy-tan: #dab894;
+  --dreamy-yellow: #fdffb6;
+  --dreamy-mint: #caffbf;
+  --dreamy-cyan: #9bf6ff;
+  --dreamy-lavender: #a0c4ff;
+  --dreamy-magenta: #ffc6ff;
+  
+  /* Coral Collection */
+  --coral-light: #f08080;
+  --coral-medium: #f4978e;
+  --coral-soft: #f8ad9d;
+  --coral-warm: #fbc4ab;
+  --coral-peach: #ffdab9;
+  
+  /* Status Colors - Updated with Pastel Palette */
+  --success-light: var(--pastel-mint-light);
+  --success-medium: var(--pastel-mint);
+  --warning-light: var(--soft-yellow);
+  --warning-medium: var(--light-butter);
+  --error-light: var(--pastel-coral);
+  --error-medium: var(--pastel-coral-bright);
+  --info-light: var(--pastel-blue-light);
+  --info-medium: var(--pastel-blue);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+}
+
+/* Dark mode variables - Updated with Extended Palette */
+.dark {
+  --neutral-cream-soft: var(--muted-slate);
+  --neutral-beige-light: var(--muted-blue-gray);
+  --neutral-gray-light: var(--muted-periwinkle);
+  --soft-cream: var(--muted-taupe);
+  --light-ivory: var(--muted-sand);
+  --warm-sand: var(--muted-peach);
+}
+
+/* Enhanced Typography */
+.dashboard-title {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.dashboard-subtitle {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.dashboard-body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Enhanced Card Styles - Updated with Extended Palette */
+.dashboard-card {
+  background: linear-gradient(135deg, var(--neutral-cream-soft) 0%, var(--light-ivory) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--neutral-beige-light);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .dashboard-card {
+  background: linear-gradient(135deg, var(--muted-slate) 0%, var(--muted-blue-gray) 100%);
+  border: 1px solid var(--muted-periwinkle);
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--soft-mauve);
+}
+
+/* Card Variants */
+.dashboard-card.elegant {
+  background: var(--soft-cream);
+  border-color: var(--neutral-beige-light);
+}
+
+.dashboard-card.fresh {
+  background: var(--dreamy-mint);
+  border-color: var(--pastel-mint);
+}
+
+.dashboard-card.warm {
+  background: var(--warm-sand);
+  border-color: var(--warm-apricot);
+}
+
+.dashboard-card.cool {
+  background: var(--cool-powder);
+  border-color: var(--cool-sky);
+}
+
+/* Gradient Backgrounds - Updated with Extended Palette */
+.gradient-elegant {
+  background: linear-gradient(135deg, var(--soft-cream) 0%, var(--light-ivory) 50%, var(--warm-pearl) 100%);
+}
+
+.gradient-fresh {
+  background: linear-gradient(135deg, var(--dreamy-mint) 0%, var(--soft-aqua) 50%, var(--pastel-mint) 100%);
+}
+
+.gradient-warm {
+  background: linear-gradient(135deg, var(--warm-sand) 0%, var(--warm-apricot) 50%, var(--coral-medium) 100%);
+}
+
+.gradient-cool {
+  background: linear-gradient(135deg, var(--cool-powder) 0%, var(--cool-sky) 50%, var(--pastel-blue) 100%);
+}
+
+.gradient-dreamy {
+  background: linear-gradient(135deg, var(--dreamy-lavender) 0%, var(--soft-mauve) 50%, var(--pastel-pink) 100%);
+}
+
+/* Sunset Gradient */
+.gradient-sunset {
+  background: linear-gradient(135deg, var(--coral-peach) 0%, var(--warm-apricot) 50%, var(--light-peach) 100%);
+}
+
+/* Ocean Gradient */
+.gradient-ocean {
+  background: linear-gradient(135deg, var(--dreamy-cyan) 0%, var(--cool-seafoam) 50%, var(--pastel-mint) 100%);
+}
+
+/* Garden Gradient */
+.gradient-garden {
+  background: linear-gradient(135deg, var(--dreamy-lime) 0%, var(--soft-green) 50%, var(--light-mint) 100%);
+}
+
+/* Lavender Gradient */
+.gradient-lavender {
+  background: linear-gradient(135deg, var(--dreamy-lavender) 0%, var(--soft-mauve) 50%, var(--pastel-pink) 100%);
+}
+
+/* Cream Gradient */
+.gradient-cream {
+  background: linear-gradient(135deg, var(--light-ivory) 0%, var(--neutral-cream-soft) 50%, var(--warm-pearl) 100%);
+}
+
+/* Enhanced Button Styles */
+.dashboard-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-xl);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.dashboard-button:hover::before {
+  left: 100%;
+}
+
+/* Loading Animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .shimmer {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200px 100%;
+}
+
+/* Pulse Animation */
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.pulse-soft {
+  animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Enhanced Scrollbar */
+.dashboard-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-track {
+  background: var(--secondary-100);
+  border-radius: var(--radius-sm);
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb {
+  background: var(--primary-400);
+  border-radius: var(--radius-sm);
+  transition: background 0.3s ease;
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-500);
+}
+
+/* Status Indicators - Updated with Pastel Palette */
+.status-indicator {
+  position: relative;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-indicator::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.status-active {
+  background-color: var(--success-medium);
+}
+
+.status-active::after {
+  background-color: var(--success-light);
+}
+
+.status-warning {
+  background-color: var(--warning-medium);
+}
+
+.status-warning::after {
+  background-color: var(--warning-light);
+}
+
+.status-error {
+  background-color: var(--error-medium);
+}
+
+.status-error::after {
+  background-color: var(--error-light);
+}
+
+.status-info {
+  background-color: var(--info-medium);
+}
+
+.status-info::after {
+  background-color: var(--info-light);
+}
+
+/* Badge Styles */
+.badge-mint {
+  background-color: var(--pastel-mint-light);
+  color: var(--vibrant-sage);
+  border: 1px solid var(--pastel-mint);
+}
+
+.badge-coral {
+  background-color: var(--pastel-coral);
+  color: var(--muted-terracotta);
+  border: 1px solid var(--coral-medium);
+}
+
+.badge-lavender {
+  background-color: var(--pastel-lavender);
+  color: var(--vibrant-purple);
+  border: 1px solid var(--soft-mauve);
+}
+
+.badge-blue {
+  background-color: var(--pastel-blue-light);
+  color: var(--muted-blue-gray);
+  border: 1px solid var(--pastel-blue);
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Responsive Design Enhancements */
+@media (max-width: 768px) {
+  .dashboard-card {
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+  }
+  
+  .dashboard-title {
+    font-size: 1.5rem;
+  }
+  
+  .dashboard-subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-card {
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+  }
+  
+  .dashboard-title {
+    font-size: 1.25rem;
+  }
+}
+
+/* Focus States for Accessibility */
+.dashboard-card:focus,
+.dashboard-button:focus {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .dashboard-card {
+    border-width: 2px;
+  }
+  
+  .dashboard-button {
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-card,
+  .dashboard-button,
+  .shimmer,
+  .pulse-soft,
+  .float {
+    animation: none;
+    transition: none;
+  }
+  
+  .dashboard-card:hover {
+    transform: none;
+  }
+}
