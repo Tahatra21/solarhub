@@ -60,6 +60,8 @@ export default function PLNLandscapeLogin() {
                     placeholder="Username"
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
                     autoComplete="username"
+                    required
+                    style={{ pointerEvents: 'auto', zIndex: 1 }}
                   />
                 </div>
 
@@ -75,6 +77,8 @@ export default function PLNLandscapeLogin() {
                       placeholder="Enter your password"
                       className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
                       autoComplete="current-password"
+                      required
+                      style={{ pointerEvents: 'auto', zIndex: 1 }}
                     />
                     <button
                       type="button"
