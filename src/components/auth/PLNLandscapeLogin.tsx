@@ -33,16 +33,12 @@ export default function PLNLandscapeLogin() {
             <div className="max-w-md mx-auto w-full">
               {/* Logo */}
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-16 h-16 flex items-center justify-center">
+                <div className="w-24 h-24 flex items-center justify-center">
                   <img 
                     src="/images/logo/pln-icon-plus-logo.png" 
                     alt="PLN Icon Plus Logo" 
                     className="w-full h-full object-contain"
                   />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">PLN Icon Plus</h1>
-                  <p className="text-xs text-gray-500">Digital Solution Platform</p>
                 </div>
               </div>
 
