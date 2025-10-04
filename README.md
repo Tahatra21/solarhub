@@ -1,69 +1,149 @@
-# 🧩 Product Lifecycle Manager
+# 🌞 SolarHub - Product Lifecycle Management System
 
-Aplikasi **Product Lifecycle Manager (PLM)** adalah platform internal yang digunakan untuk memantau, mengelola, dan menganalisis siklus hidup suatu produk, mulai dari tahap perencanaan hingga tahap akhir produk.
+A comprehensive Product Lifecycle Management (PLM) system built with Next.js 15, TypeScript, and PostgreSQL for PLN ICON+.
 
-Dibangun menggunakan **Next.js** dengan dukungan antarmuka modern dari template **TailAdmin**, aplikasi ini mendukung pengelolaan produk secara efisien melalui dashboard interaktif, manajemen pengguna, grafik visualisasi lifecycle, dan sistem reporting.
+## 🚀 Features
 
----
+- **📊 Dashboard Analytics** - Comprehensive product lifecycle insights
+- **👥 User Management** - Complete user administration system
+- **🔔 Smart Notifications** - License expiry notifications with daily reset
+- **📈 Lifecycle Analysis** - Product transition matrix and speed analysis
+- **📋 Product Catalog** - Full product management with categories and segments
+- **🔍 Monitoring Tools** - CR/JR and License monitoring systems
+- **📱 Responsive Design** - Modern UI with dark/light theme support
 
-## 🚀 Fitur Utama
+## 🛠️ Tech Stack
 
-### 📊 Dashboard
-- Menyajikan ringkasan statistik penting secara real-time
-- Tampilan grafik lifecycle produk secara visual dan intuitif
-- Notifikasi status atau tindakan yang dibutuhkan oleh user
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS 4.0
+- **Database**: PostgreSQL
+- **Authentication**: JWT with Jose
+- **Charts**: ApexCharts, Chart.js
+- **Icons**: Lucide React
+- **Date Handling**: date-fns, react-datepicker
 
-### 📦 CRUD Product
-- Tambah, ubah, hapus, dan lihat data produk
-- Field utama: Nama produk, Kode, Kategori, Status lifecycle, Tanggal rilis, dan lainnya
-- Validasi data secara real-time
+## 📦 Installation
 
-### 👥 User Management
-- Registrasi dan otorisasi pengguna
-- Role-based access control (admin / user biasa)
-- Fitur reset password dan pengelolaan profil user
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Tahatra21/solarhub.git
+   cd solarhub
+   ```
 
-### 📈 Lifecycle Chart
-- Menampilkan status lifecycle produk dalam bentuk grafik
-- Tahapan meliputi: Idea → Development → Testing → Launch → Maintenance → Retired
-- Dibangun menggunakan chart library yang responsif
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-### 🧾 Reporting
-- Laporan berbasis filter tanggal, status, kategori produk, dan user
-- Ekspor ke format PDF atau Excel (fitur opsional)
-- Tampilan laporan yang terstruktur dan siap cetak
+3. **Setup environment variables**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your database credentials
+   ```
 
----
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
 
-## 🛠️ Teknologi yang Digunakan
+5. **Open your browser**
+   ```
+   http://localhost:3000
+   ```
 
-- **Next.js** – Framework React modern untuk pengembangan aplikasi web fullstack
-- **TailAdmin** – UI Template berbasis Tailwind CSS yang digunakan untuk tampilan modern dan clean
-- **TypeScript** *(opsional)* – Untuk pengembangan dengan tipe data yang lebih aman
-- **Chart.js / Recharts** – Untuk visualisasi data lifecycle produk
-- **React Hook Form / Zod** – Untuk validasi form CRUD produk dan user
-- **NextAuth / Middleware** – Untuk otentikasi dan otorisasi user
+## 🏗️ Project Structure
 
-### Cloning the Repository
-Clone the repository using the following command:
-
-```bash
-git clone https://github.com/QuiN-LanceR/product_lifecycle.git
+```
+solarhub/
+├── src/
+│   ├── app/                 # Next.js App Router
+│   │   ├── admin/          # Admin dashboard pages
+│   │   ├── api/            # API routes
+│   │   └── login/          # Authentication pages
+│   ├── components/         # React components
+│   │   ├── dashboard/     # Dashboard components
+│   │   ├── charts/        # Chart components
+│   │   ├── form/          # Form components
+│   │   └── ui/            # UI components
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Database and utilities
+│   ├── types/             # TypeScript type definitions
+│   └── utils/             # Helper functions
+├── docs/                  # Documentation
+├── scripts/               # Utility scripts
+└── public/               # Static assets
 ```
 
-> Windows Users: place the repository near the root of your drive if you face issues while cloning.
+## 🔧 Available Scripts
 
-1. Install dependencies:
-    ```bash
-    npm install
-    # or
-    yarn install
-    ```
-    > Use `--legacy-peer-deps` flag if you face peer-dependency error during installation.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
 
-2. Start the development server:
-    ```bash
-    npm run dev
-    # or
-    yarn dev
-    ```
+## 📚 Documentation
+
+- [Deployment Guide](./DEPLOYMENT_GUIDE.md)
+- [Feature Documentation](./docs/)
+- [Performance Optimization](./docs/PERFORMANCE_OPTIMIZATION.md)
+
+## 🎯 Key Features
+
+### Dashboard
+- Real-time product lifecycle analytics
+- CR/JR and License monitoring
+- Interactive charts and visualizations
+
+### User Management
+- Role-based access control
+- User profile management
+- Activity logging
+
+### Notification System
+- Smart license expiry notifications
+- Daily reset functionality
+- 30-day expiry filtering
+
+### Product Lifecycle
+- Transition matrix analysis
+- Speed analysis
+- Distribution tracking
+
+## 🔒 Security
+
+- JWT-based authentication
+- Role-based authorization
+- Input validation and sanitization
+- SQL injection protection
+
+## 📈 Performance
+
+- Optimized bundle size
+- Code splitting
+- Image optimization
+- Database query optimization
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👥 Team
+
+- **Developer**: Tahatra21
+- **Organization**: PLN ICON+
+
+## 📞 Support
+
+For support and questions, please contact the development team.
+
+---
+
+**SolarHub** - Empowering Product Lifecycle Management 🌞
