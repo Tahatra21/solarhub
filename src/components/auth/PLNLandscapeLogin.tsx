@@ -7,6 +7,38 @@ export default function PLNLandscapeLogin() {
   const [rememberMe, setRememberMe] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleLogin = async () => {
+    if (!username.trim() || !password.trim()) {
+      setMessage('Username dan password harus diisi');
+      return;
+    }
+
+    setIsLoading(true);
+    setMessage('');
+
+    try {
+      // Simulasi loading
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Simulasi validasi sederhana
+      if (username === 'admin' && password === 'admin') {
+        setMessage('Login berhasil! Redirecting...');
+        // Redirect ke admin dashboard
+        setTimeout(() => {
+          window.location.href = '/admin';
+        }, 1000);
+      } else {
+        setMessage('Username atau password salah');
+      }
+    } catch (error) {
+      setMessage('Terjadi kesalahan saat login');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 flex items-center justify-center p-0 overflow-hidden relative">
@@ -108,9 +140,35 @@ export default function PLNLandscapeLogin() {
                 </div>
 
                 {/* Login Button */}
-                <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/30 hover:shadow-xl">
-                  Masuk
+                <button 
+                  onClick={handleLogin}
+                  disabled={isLoading}
+                  className={`w-full font-semibold py-3.5 rounded-xl transition shadow-lg ${
+                    isLoading 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-blue-600/30 hover:shadow-xl'
+                  } text-white`}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Memproses...
+                    </div>
+                  ) : (
+                    'Masuk'
+                  )}
                 </button>
+
+                {/* Message Display */}
+                {message && (
+                  <div className={`mt-3 p-3 rounded-lg text-sm font-medium ${
+                    message.includes('berhasil') 
+                      ? 'bg-green-100 text-green-800 border border-green-200' 
+                      : 'bg-red-100 text-red-800 border border-red-200'
+                  }`}>
+                    {message}
+                  </div>
+                )}
               </div>
             </div>
           </div>
