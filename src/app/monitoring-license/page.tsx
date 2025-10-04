@@ -63,8 +63,6 @@ const MonitoringLicensePage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('=== Frontend: Fetching licenses from API ===');
-      console.log('Request params:', { page, limit: itemsPerPage, search: searchTerm, status: statusFilter });
   
       const params = new URLSearchParams({
         page: page.toString(),
@@ -81,8 +79,6 @@ const MonitoringLicensePage: React.FC = () => {
         signal,
       });
   
-      console.log('API Response status:', response.status);
-      console.log('API Response headers:', Object.fromEntries(response.headers.entries()));
   
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -103,21 +99,10 @@ const MonitoringLicensePage: React.FC = () => {
       }
   
       const data = await response.json();
-      console.log('API Response received:', {
-        dataCount: data.data?.length || 0,
-        total: data.pagination?.total || 0,
-        schemaVersion: data.meta?.schemaVersion || 'unknown'
-      });
   
       // Debug: Log sample data to check price values
       if (data.data && data.data.length > 0) {
-        console.log('=== DEBUG: Frontend received data sample ===');
-        console.log('First item:', data.data[0]);
-        console.log('Price values:', {
-          unit_price: data.data[0].unit_price,
-          total_price: data.data[0].total_price,
-          selling_price: data.data[0].selling_price
-        });
+        // Sample data validation (console.log removed for production)
       }
       // Validate response structure
       if (!data.data || !Array.isArray(data.data)) {
@@ -134,15 +119,8 @@ const MonitoringLicensePage: React.FC = () => {
       setTotalItems(data.pagination.total);
       setTotalPages(data.pagination.totalPages);
       
-      // Log schema version for debugging
-      if (data.meta?.schemaVersion) {
-        console.log('Database schema version:', data.meta.schemaVersion);
-      }
-  
-      console.log('=== Frontend: Fetch Licenses completed ===');
     } catch (error) {
       if (signal?.aborted) {
-        console.log('Fetch request was aborted');
         return;
       }
   
@@ -238,7 +216,6 @@ const MonitoringLicensePage: React.FC = () => {
 
   // Handle edit license
   const handleEdit = (license: LicenseData) => {
-    console.log('Editing license:', license);
     setEditingLicense({
       ...license
     });

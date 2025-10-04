@@ -29,7 +29,6 @@ const NotificationBell: React.FC = () => {
       
       // Check if notifications were recently cleared (within same day)
       const clearedAt = localStorage.getItem('notifications_cleared_at');
-      console.log('🔍 Checking localStorage cleared_at:', clearedAt);
       
       if (clearedAt) {
         const clearedTime = new Date(clearedAt);
@@ -39,27 +38,18 @@ const NotificationBell: React.FC = () => {
         const clearedDate = clearedTime.toDateString();
         const currentDate = now.toDateString();
         
-        console.log('🔍 Cleared date:', clearedDate);
-        console.log('🔍 Current date:', currentDate);
-        console.log('🔍 Same day?', clearedDate === currentDate);
-        
         // If cleared on the same day, don't fetch notifications
         if (clearedDate === currentDate) {
-          console.log('✅ Notifications cleared today, showing empty list');
           setNotifications([]);
           setLoading(false);
           return;
         } else {
-          console.log('🔄 Different day, clearing localStorage and fetching notifications');
           localStorage.removeItem('notifications_cleared_at');
         }
       }
-      
-      console.log('📡 Fetching notifications from API...');
       const response = await fetch('/api/license-notifications');
       if (response.ok) {
         const data = await response.json();
-        console.log('📡 API response:', data);
         
         // Filter notifications based on 30-day expiry rule (only future dates)
         const filteredNotifications = (data.data || []).filter((notification: Notification) => {
@@ -71,7 +61,6 @@ const NotificationBell: React.FC = () => {
           return daysDiff >= 0 && daysDiff <= 30;
         });
         
-        console.log('📡 Filtered notifications:', filteredNotifications.length);
         setNotifications(filteredNotifications);
       }
     } catch (error) {
@@ -109,7 +98,6 @@ const NotificationBell: React.FC = () => {
   // Clear all notifications
   const clearAllNotifications = async () => {
     try {
-      console.log('🗑️ Starting to clear notifications...');
       
       const response = await fetch('/api/license-notifications?clear_all=true', {
         method: 'DELETE',
@@ -118,21 +106,16 @@ const NotificationBell: React.FC = () => {
         },
       });
 
-      console.log('🗑️ API response status:', response.status);
-      console.log('🗑️ API response ok:', response.ok);
 
       if (response.ok) {
         const result = await response.json();
-        console.log('🗑️ API response data:', result);
         
         // Store cleared timestamp in localStorage (current date)
         const clearedTimestamp = new Date().toISOString();
         localStorage.setItem('notifications_cleared_at', clearedTimestamp);
-        console.log('🗑️ Stored clear timestamp:', clearedTimestamp);
         
         // Clear notifications from state immediately
         setNotifications([]);
-        console.log('✅ All notifications cleared from UI');
         
         // Close dropdown after clearing
         setIsOpen(false);
@@ -342,11 +325,8 @@ const NotificationBell: React.FC = () => {
                   
                   <button
                     onClick={() => {
-                      console.log('🔄 Resetting notifications...');
                       localStorage.removeItem('notifications_cleared_at');
-                      console.log('🔄 Cleared localStorage');
                       fetchNotifications();
-                      console.log('🔄 Refreshed notifications');
                     }}
                     className="flex-1 text-center text-sm text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium px-3 py-2 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors border border-green-200"
                   >
