@@ -33,7 +33,7 @@ export default function PLNLandscapeLogin() {
             <div className="max-w-md mx-auto w-full">
               {/* Logo */}
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-24 h-24 flex items-center justify-center">
+                <div className="w-35 h-35 flex items-center justify-center">
                   <img 
                     src="/images/logo/pln-icon-plus-logo.png" 
                     alt="PLN Icon Plus Logo" 
@@ -44,7 +44,8 @@ export default function PLNLandscapeLogin() {
 
               <div className="mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-                <p className="text-gray-600">Solution Architect HUB</p>
+                <p className="text-gray-600">Sign in to your workspace.</p>
+                <p className="text-gray-600">Solution. Design. Deploy. Monitor.</p>
               </div>
 
               <div className="space-y-5">
@@ -55,8 +56,10 @@ export default function PLNLandscapeLogin() {
                   </label>
                   <input
                     type="text"
+                    name="username"
                     placeholder="Username"
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
+                    autoComplete="username"
                   />
                 </div>
 
@@ -68,10 +71,13 @@ export default function PLNLandscapeLogin() {
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
+                      name="password"
                       placeholder="Enter your password"
                       className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
+                      autoComplete="current-password"
                     />
                     <button
+                      type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
                     >
@@ -98,15 +104,6 @@ export default function PLNLandscapeLogin() {
                   Masuk
                 </button>
               </div>
-
-              <div className="mt-8 text-center">
-                <p className="text-sm text-gray-600">
-                  Butuh bantuan?{' '}
-                  <a href="#" className="text-blue-600 hover:text-blue-700 font-semibold">
-                    Hubungi IT Support
-                  </a>
-                </p>
-              </div>
             </div>
           </div>
 
@@ -125,7 +122,7 @@ export default function PLNLandscapeLogin() {
             <div className="relative z-10 text-white">
               <div className="mb-8">
                 <h2 className="text-5xl font-bold mb-4 leading-tight">
-                  PLN ICON PLUS
+                 SOLUTION ARCHITECT HUB
                 </h2>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
@@ -134,7 +131,7 @@ export default function PLNLandscapeLogin() {
               </div>
 
               <p className="text-lg text-blue-100 mb-8 max-w-xl">
-                Platform terintegrasi untuk mengelola arsitektur solusi digital PLN dengan teknologi terdepan
+                Platform terintegrasi untuk mengelola Services & Projects dengan teknologi terdepan
               </p>
 
               {/* Products Grid */}
