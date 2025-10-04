@@ -153,7 +153,7 @@ export default function RoleBasedNavigation() {
               ? 'bg-blue-50 text-blue-700' 
               : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
           }`}>
-            <Cycle className="w-4 h-4 mr-1.5" />
+            <RotateCcw className="w-4 h-4 mr-1.5" />
             Lifecycle Analyst
           </button>
         </Link>
