@@ -26,6 +26,14 @@ echo "🧹 Clearing npm cache..."
 npm cache clean --force
 echo "✅ npm cache cleared"
 
+# Clear webpack cache specifically
+if [ -d ".next/cache/webpack" ]; then
+    rm -rf .next/cache/webpack
+    echo "✅ webpack cache cleared"
+else
+    echo "ℹ️  webpack cache not found"
+fi
+
 echo ""
 echo "🎯 CACHE CLEANUP COMPLETED!"
 echo ""
@@ -38,5 +46,12 @@ echo "🔧 COMMON SOLUTIONS:"
 echo "- Restart your development server"
 echo "- Clear browser cache"
 echo "- Check for conflicting processes on port 3000"
+echo "- Run 'npm run build' to test build process"
+echo ""
+echo "🚨 SPECIFIC ERRORS FIXED:"
+echo "- Cannot find module './4586.js'"
+echo "- Webpack runtime errors"
+echo "- Module resolution issues"
+echo "- Cache corruption problems"
 echo ""
 echo "✨ Cache cleanup completed successfully!"
