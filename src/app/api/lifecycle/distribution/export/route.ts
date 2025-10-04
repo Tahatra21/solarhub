@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import * as XLSX from 'xlsx';
+import { SecureExcelService } from '@/services/secureExcelService';
 import { getPool } from '@/lib/database';
 
 export async function GET() {
@@ -38,44 +38,18 @@ export async function GET() {
       'Tanggal Diperbarui': product.tanggal_diperbarui ? new Date(product.tanggal_diperbarui).toLocaleDateString('id-ID') : '-'
     }));
 
-    // Buat workbook
-    const workbook = XLSX.utils.book_new();
-    
-    // Buat worksheet dari data
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-    
-    // Set lebar kolom
-    const columnWidths = [
-      { wch: 5 },   // No
-      { wch: 25 },  // Nama Produk
-      { wch: 30 },  // Deskripsi
-      { wch: 15 },  // Kategori
-      { wch: 12 },  // Stage
-      { wch: 12 },  // Segmen
-      { wch: 15 },  // Harga
-      { wch: 15 },  // Tanggal Dibuat
-      { wch: 15 }   // Tanggal Diperbarui
-    ];
-    worksheet['!cols'] = columnWidths;
-    
-    // Tambahkan worksheet ke workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Produk');
-    
-    // Generate buffer
-    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-    
-    // Set headers untuk download
-    const headers = new Headers();
-    headers.set('Content-Disposition', `attachment; filename="Data_Produk_${new Date().toISOString().split('T')[0]}.xlsx"`);
-    headers.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    
-    return new NextResponse(buffer, {
-      status: 200,
-      headers
+    // Buat workbook menggunakan SecureExcelService
+    const buffer = await SecureExcelService.createWorkbook(excelData, {
+      sheetName: 'Lifecycle Distribution',
+      headers: ['No', 'Nama Produk', 'Deskripsi', 'Kategori', 'Stage', 'Segmen', 'Harga', 'Tanggal Dibuat', 'Tanggal Diperbarui'],
+      filename: `Lifecycle_Distribution_${new Date().toISOString().split('T')[0]}.xlsx`
     });
+    
+    // Return response dengan security headers
+    return SecureExcelService.createExcelResponse(buffer, `Lifecycle_Distribution_${new Date().toISOString().split('T')[0]}.xlsx`);
 
   } catch (error) {
-    console.error('Error exporting products:', error);
+    console.error('Error exporting lifecycle distribution:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

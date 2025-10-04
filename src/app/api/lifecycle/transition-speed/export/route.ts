@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getPool } from '@/lib/database';
-import * as XLSX from 'xlsx';
+import { SecureExcelService } from '@/services/secureExcelService';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -124,10 +124,7 @@ export async function GET(request: Request) {
     
     const result = await client.query(query);
     
-    // Buat workbook Excel
-    const workbook = XLSX.utils.book_new();
-    
-    // Sheet 1: Summary Data
+    // Buat workbook Excel menggunakan SecureExcelService
     const summaryData = result.rows.map(row => ({
       'Segmen': row.segmen,
       'Transisi': row.transition_name,
@@ -141,36 +138,15 @@ export async function GET(request: Request) {
       'Median Durasi': `${row.median_duration} ${timeUnit}`
     }));
     
-    const summarySheet = XLSX.utils.json_to_sheet(summaryData);
-    XLSX.utils.book_append_sheet(workbook, summarySheet, 'Transition Speed Analysis');
-    
-    // Sheet 2: Statistics
-    const segments = [...new Set(result.rows.map(row => row.segmen))];
-    const statsData = segments.map(segment => {
-      const segmentData = result.rows.filter(row => row.segmen === segment);
-      const totalTransitions = segmentData.reduce((sum, row) => sum + parseInt(row.total_transitions), 0);
-      const avgEfficiency = segmentData.reduce((sum, row) => sum + parseFloat(row.avg_efficiency), 0) / segmentData.length;
-      
-      return {
-        'Segmen': segment,
-        'Total Transisi': totalTransitions,
-        'Rata-rata Efisiensi (%)': Math.round(avgEfficiency * 100) / 100,
-        'Jumlah Jenis Transisi': segmentData.length
-      };
+    // Generate Excel buffer menggunakan SecureExcelService
+    const buffer = await SecureExcelService.createWorkbook(summaryData, {
+      sheetName: 'Transition Speed Analysis',
+      headers: ['Segmen', 'Transisi', 'Total Transisi', 'Rata-rata Durasi Aktual', 'Rata-rata Durasi Rencana', 'Efisiensi (%)', 'Standar Deviasi', 'Durasi Minimum', 'Durasi Maksimum', 'Median Durasi'],
+      filename: `Transition_Speed_${analysisType}_${timeUnit}_${new Date().toISOString().split('T')[0]}.xlsx`
     });
     
-    const statsSheet = XLSX.utils.json_to_sheet(statsData);
-    XLSX.utils.book_append_sheet(workbook, statsSheet, 'Statistics');
-    
-    // Generate Excel buffer
-    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-    
-    // Set headers untuk download
-    const headers = new Headers();
-    headers.set('Content-Disposition', `attachment; filename="transition-speed-analysis-${new Date().toISOString().slice(0, 10)}.xlsx"`);
-    headers.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    
-    return new NextResponse(excelBuffer, { headers });
+    // Return response dengan security headers
+    return SecureExcelService.createExcelResponse(buffer, `Transition_Speed_${analysisType}_${timeUnit}_${new Date().toISOString().split('T')[0]}.xlsx`);
     
   } catch (error) {
     console.error("Error exporting transition speed analysis:", error);

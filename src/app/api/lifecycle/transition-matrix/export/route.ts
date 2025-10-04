@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from '@/lib/database';
-import * as XLSX from 'xlsx';
+import { SecureExcelService } from '@/services/secureExcelService';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -105,65 +105,18 @@ export async function GET(request: NextRequest) {
       matrixData.push(row);
     });
     
-    // Membuat workbook
-    const workbook = XLSX.utils.book_new();
-    
-    // Sheet 1: Transition Matrix
-    const matrixSheet = XLSX.utils.aoa_to_sheet(matrixData);
-    
-    // Styling untuk header
-    const range = XLSX.utils.decode_range(matrixSheet['!ref'] || 'A1');
-    for (let col = range.s.c; col <= range.e.c; col++) {
-      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
-      if (!matrixSheet[cellAddress]) continue;
-      matrixSheet[cellAddress].s = {
-        font: { bold: true },
-        fill: { fgColor: { rgb: 'E5F3FF' } },
-        alignment: { horizontal: 'center' }
-      };
-    }
-    
-    // Set column widths
-    const colWidths = [{ width: 20 }, ...segments.map(() => ({ width: 15 }))];
-    matrixSheet['!cols'] = colWidths;
-    
-    XLSX.utils.book_append_sheet(workbook, matrixSheet, 'Transition Matrix');
-    
-    // Sheet 2: Filter Info
-    const filterInfo = [
-      ['Filter Information'],
-      ['Segment Filter', selectedSegment],
-      ['Stage Filter', selectedStage],
-      ['Export Date', new Date().toLocaleString('id-ID')],
-      [],
-      ['Legend'],
-      ['0', 'Tidak ada produk'],
-      ['1-2', 'Sedikit produk'],
-      ['3-5', 'Produk sedang'],
-      ['6-9', 'Banyak produk'],
-      ['10+', 'Sangat banyak produk']
-    ];
-    
-    const filterSheet = XLSX.utils.aoa_to_sheet(filterInfo);
-    filterSheet['!cols'] = [{ width: 20 }, { width: 30 }];
-    
-    XLSX.utils.book_append_sheet(workbook, filterSheet, 'Filter Info');
-    
-    // Generate buffer
-    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    // Generate buffer menggunakan SecureExcelService
+    const buffer = await SecureExcelService.createWorkbook(matrixData, {
+      sheetName: 'Transition Matrix',
+      filename: `Transition_Matrix_${selectedSegment}_${selectedStage}_${new Date().toISOString().split('T')[0]}.xlsx`
+    });
     
     // Generate filename
     const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
     const filename = `transition-matrix-${timestamp}.xlsx`;
     
-    return new NextResponse(buffer, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'Content-Disposition': `attachment; filename="${filename}"`,
-        'Content-Length': buffer.length.toString()
-      }
-    });
+    // Return response dengan security headers
+    return SecureExcelService.createExcelResponse(buffer, filename);
     
   } catch (error) {
     console.error('Error exporting transition matrix:', error);
