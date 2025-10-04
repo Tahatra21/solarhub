@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Eye, Edit, Trash2, User, Mail, Calendar, Plus, Search, RefreshCcw } from 'lucide-react';
+import { Eye, Edit, Trash2, User, Mail, Calendar, Plus, Search, RefreshCcw, X, Save } from 'lucide-react';
 
 interface User {
   id: number;
@@ -15,6 +15,16 @@ interface User {
   updated_at?: string | null;
 }
 
+interface Role {
+  id: number;
+  role: string;
+}
+
+interface Jabatan {
+  id: number;
+  jabatan: string;
+}
+
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +32,24 @@ export default function UsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [formData, setFormData] = useState({
+    username: '',
+    fullname: '',
+    email: '',
+    password: '',
+    role: '',
+    jabatan: ''
+  });
+  
+  // Options
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [jabatan, setJabatan] = useState<Jabatan[]>([]);
+  const [loadingOptions, setLoadingOptions] = useState(false);
 
   // Fetch users data
   const fetchUsers = async () => {
@@ -75,8 +103,29 @@ export default function UsersPage() {
     }
   };
 
+  // Fetch options (roles and jabatan)
+  const fetchOptions = async () => {
+    try {
+      setLoadingOptions(true);
+      const response = await fetch('/api/users/options', {
+        credentials: 'include',
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setRoles(data.roles || []);
+        setJabatan(data.jabatan || []);
+      }
+    } catch (error) {
+      console.error('Error fetching options:', error);
+    } finally {
+      setLoadingOptions(false);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchOptions();
   }, [currentPage, searchQuery]);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -85,22 +134,119 @@ export default function UsersPage() {
     fetchUsers();
   };
 
+  // Reset form data
+  const resetFormData = () => {
+    setFormData({
+      username: '',
+      fullname: '',
+      email: '',
+      password: '',
+      role: '',
+      jabatan: ''
+    });
+  };
+
+  // Open modal
+  const openModal = (mode: 'add' | 'edit' | 'view', user?: User) => {
+    setModalMode(mode);
+    setSelectedUser(user || null);
+    
+    if (mode === 'add') {
+      resetFormData();
+    } else if (user) {
+      setFormData({
+        username: user.username || '',
+        fullname: user.fullname || '',
+        email: user.email || '',
+        password: '',
+        role: user.role || '',
+        jabatan: user.jabatan || ''
+      });
+    }
+    
+    setShowModal(true);
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedUser(null);
+    resetFormData();
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const url = modalMode === 'add' ? '/api/users' : `/api/users?id=${selectedUser?.id}`;
+      const method = modalMode === 'add' ? 'POST' : 'PUT';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...(modalMode === 'edit' && { id: selectedUser?.id }),
+          username: formData.username,
+          fullname: formData.fullname,
+          email: formData.email,
+          password: formData.password,
+          role: parseInt(formData.role),
+          jabatan: parseInt(formData.jabatan)
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        alert(data.message || `${modalMode === 'add' ? 'User created' : 'User updated'} successfully`);
+        closeModal();
+        fetchUsers(); // Refresh the list
+      } else {
+        alert(data.error || 'An error occurred');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('An error occurred while saving');
+    }
+  };
+
   const handleViewDetails = (user: User) => {
-    alert(`View details for: ${user.fullname}`);
+    openModal('view', user);
   };
 
   const handleEdit = (user: User) => {
-    alert(`Edit: ${user.fullname}`);
+    openModal('edit', user);
   };
 
-  const handleDelete = (user: User) => {
+  const handleDelete = async (user: User) => {
     if (confirm(`Are you sure you want to delete ${user.fullname}?`)) {
-      alert(`Delete: ${user.fullname}`);
+      try {
+        const response = await fetch(`/api/users?id=${user.id}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert(data.message || 'User deleted successfully');
+          fetchUsers(); // Refresh the list
+        } else {
+          alert(data.error || 'An error occurred');
+        }
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        alert('An error occurred while deleting');
+      }
     }
   };
 
   const handleAdd = () => {
-    alert('Add new user');
+    openModal('add');
   };
 
   return (
@@ -283,6 +429,153 @@ export default function UsersPage() {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md mx-4">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {modalMode === 'add' ? 'Add New User' : 
+                 modalMode === 'edit' ? 'Edit User' : 
+                 'User Details'}
+              </h3>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6">
+              <div className="space-y-4">
+                {/* Username */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.username}
+                    onChange={(e) => setFormData({...formData, username: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                    required
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+
+                {/* Full Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.fullname}
+                    onChange={(e) => setFormData({...formData, fullname: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                    required
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                    required
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+
+                {/* Password */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Password {modalMode === 'edit' && '(leave empty to keep current)'}
+                  </label>
+                  <input
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                    required={modalMode === 'add'}
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+
+                {/* Role */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Role
+                  </label>
+                  <select
+                    value={formData.role}
+                    onChange={(e) => setFormData({...formData, role: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                    required
+                    disabled={modalMode === 'view'}
+                  >
+                    <option value="">Select Role</option>
+                    {roles.map((role) => (
+                      <option key={role.id} value={role.id}>
+                        {role.role}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Jabatan */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Jabatan
+                  </label>
+                  <select
+                    value={formData.jabatan}
+                    onChange={(e) => setFormData({...formData, jabatan: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                    required
+                    disabled={modalMode === 'view'}
+                  >
+                    <option value="">Select Jabatan</option>
+                    {jabatan.map((jab) => (
+                      <option key={jab.id} value={jab.id}>
+                        {jab.jabatan}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+                {modalMode !== 'view' && (
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {modalMode === 'add' ? 'Create User' : 'Update User'}
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
