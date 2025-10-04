@@ -2,6 +2,7 @@
 // import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import UserDropdown from "@/components/header/UserDropdown";
 import NotificationBell from "@/components/NotificationBell";
+import RoleBasedNavigation from "@/components/navigation/RoleBasedNavigation";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState ,useEffect,useRef} from "react";
@@ -146,71 +147,8 @@ const AppHeader: React.FC = () => {
             </Link>
           </div>
 
-          {/* Main Navigation */}
-          <div className="hidden md:block flex-1">
-            <div className="ml-8 flex items-center space-x-2">
-              {navItems.map((item) => (
-                <div key={item.name} className="relative">
-                  {item.subItems ? (
-                    <div className="relative">
-                      <button
-                        onClick={() => handleDropdownToggle(item.name)}
-                        className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                          isActive(item.path || '') || activeDropdown === item.name
-                            ? 'bg-blue-50 text-blue-700'
-                            : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                        }`}
-                      >
-                        <span className="mr-1.5">{item.lightIcon}</span>
-                        {item.name}
-                        <ChevronDownIcon className={`ml-1 h-4 w-4 transition-transform duration-200 ${
-                          activeDropdown === item.name ? 'rotate-180' : ''
-                        }`} />
-                      </button>
-
-                      {/* Dropdown Menu */}
-                      {activeDropdown === item.name && (
-                        <div className="absolute top-full left-0 mt-2 w-56 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200/30 z-[9999]">
-                          <div className="py-2">
-                            {item.subItems.map((subItem) => (
-                              <button
-                                key={subItem.name}
-                                onClick={() => handleNavigation(subItem.path)}
-                                className={`w-full text-left px-4 py-2 text-sm transition-all duration-200 ${
-                                  isActive(subItem.path)
-                                    ? 'bg-blue-50 text-blue-700 font-medium'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
-                              >
-                                {subItem.name}
-                                {subItem.new && (
-                                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    New
-                                  </span>
-                                )}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => handleNavigation(item.path!)}
-                      className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        isActive(item.path!)
-                          ? 'bg-blue-50 text-blue-700'
-                          : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      <span className="mr-1.5">{item.lightIcon}</span>
-                      {item.name}
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Role-Based Navigation */}
+          <RoleBasedNavigation />
 
           {/* User Functions - Always Visible */}
           <div className="flex items-center gap-1 2xsm:gap-2 sm:gap-3">

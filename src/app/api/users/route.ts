@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPool } from '@/lib/database';
 import { verifyToken } from '@/utils/auth';
+import { canManageUsers } from '@/utils/rbac';
 import bcrypt from 'bcryptjs';
 
 // GET - Fetch single user
@@ -73,6 +74,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Check if user can manage users
+    if (!canManageUsers(decoded.role)) {
+      return NextResponse.json({ 
+        error: 'Insufficient permissions. Only Admin can manage users.',
+        required: 'Admin role',
+        current: decoded.role 
+      }, { status: 403 });
+    }
+
     const body = await request.json();
     const { username, fullname, email, password, role, jabatan } = body;
 
@@ -135,6 +145,15 @@ export async function PUT(request: NextRequest) {
     const decoded = verifyToken(token);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Check if user can manage users
+    if (!canManageUsers(decoded.role)) {
+      return NextResponse.json({ 
+        error: 'Insufficient permissions. Only Admin can manage users.',
+        required: 'Admin role',
+        current: decoded.role 
+      }, { status: 403 });
     }
 
     const body = await request.json();
@@ -245,6 +264,15 @@ export async function DELETE(request: NextRequest) {
     const decoded = verifyToken(token);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Check if user can manage users
+    if (!canManageUsers(decoded.role)) {
+      return NextResponse.json({ 
+        error: 'Insufficient permissions. Only Admin can manage users.',
+        required: 'Admin role',
+        current: decoded.role 
+      }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

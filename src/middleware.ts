@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/utils/auth";
 import { securityMiddleware, corsMiddleware, rateLimit } from "@/middleware/security";
+import { rbacMiddleware } from "@/middleware/rbac";
 // Import env validator untuk memastikan environment variables valid
 import "@/lib/env";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  
+  // Apply RBAC middleware first
+  const rbacResponse = rbacMiddleware(req);
+  if (rbacResponse.status !== 200) {
+    return rbacResponse;
+  }
   
   // Apply security middleware untuk semua request
   let response = securityMiddleware(req);

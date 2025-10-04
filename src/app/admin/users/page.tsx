@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Eye, Edit, Trash2, User, Mail, Calendar, Plus, Search, RefreshCcw, X, Save } from 'lucide-react';
+import { canManageUsers, UserRole } from '@/utils/rbac';
+import CRUDButtons, { RoleBadge } from '@/components/common/CRUDButtons';
 
 interface User {
   id: number;
@@ -32,6 +34,9 @@ export default function UsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  
+  // Current user info
+  const [currentUser, setCurrentUser] = useState<{role: string} | null>(null);
   
   // Modal states
   const [showModal, setShowModal] = useState(false);
@@ -123,7 +128,24 @@ export default function UsersPage() {
     }
   };
 
+  // Fetch current user info
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch('/api/me', {
+        credentials: 'include',
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentUser(data.user);
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+    }
+  };
+
   useEffect(() => {
+    fetchCurrentUser();
     fetchUsers();
     fetchOptions();
   }, [currentPage, searchQuery]);
@@ -253,27 +275,34 @@ export default function UsersPage() {
     <div className="p-6">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow border p-6 mb-6">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Users</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage system users</p>
-            <p className="text-xs text-gray-400 mt-1">Debug: {users.length} users loaded</p>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Users</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">Manage system users</p>
+              <p className="text-xs text-gray-400 mt-1">Debug: {users.length} users loaded</p>
+              {currentUser && (
+                <div className="mt-2">
+                  <RoleBadge userRole={currentUser.role} />
+                </div>
+              )}
+            </div>
+            <div className="mt-4 md:mt-0 flex flex-wrap gap-3">
+              {currentUser && canManageUsers(currentUser.role) && (
+                <CRUDButtons
+                  userRole={currentUser.role}
+                  onAdd={handleAdd}
+                  addLabel="Add New User"
+                  className="flex items-center"
+                />
+              )}
+              <button
+                onClick={fetchUsers}
+                className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
+              >
+                <RefreshCcw className="w-4 h-4 mr-2" /> Refresh
+              </button>
+            </div>
           </div>
-          <div className="mt-4 md:mt-0 flex flex-wrap gap-3">
-            <button
-              onClick={handleAdd}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <Plus className="w-4 h-4 mr-2" /> Add New
-            </button>
-            <button
-              onClick={fetchUsers}
-              className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
-            >
-              <RefreshCcw className="w-4 h-4 mr-2" /> Refresh
-            </button>
-          </div>
-        </div>
         
         {/* Search */}
         <form onSubmit={handleSearch} className="relative mt-4">
@@ -374,24 +403,15 @@ export default function UsersPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <div className="flex items-center justify-center space-x-2">
-                        <button
-                          onClick={() => handleViewDetails(user)}
-                          className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(user)}
-                          className="p-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 rounded-md"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user)}
-                          className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {currentUser && (
+                          <CRUDButtons
+                            userRole={currentUser.role}
+                            onView={() => handleViewDetails(user)}
+                            onEdit={() => handleEdit(user)}
+                            onDelete={() => handleDelete(user)}
+                            className="flex items-center space-x-1"
+                          />
+                        )}
                       </div>
                     </td>
                   </tr>
