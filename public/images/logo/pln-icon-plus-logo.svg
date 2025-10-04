@@ -1,0 +1,12 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Yellow background square -->
+  <rect width="64" height="64" fill="#FFD700" rx="8"/>
+  
+  <!-- Blue wavy lines (water waves) -->
+  <path d="M12 20 Q20 16, 28 20 T44 20" stroke="#0066CC" stroke-width="3" fill="none"/>
+  <path d="M12 28 Q20 24, 28 28 T44 28" stroke="#0066CC" stroke-width="3" fill="none"/>
+  <path d="M12 36 Q20 32, 28 36 T44 36" stroke="#0066CC" stroke-width="3" fill="none"/>
+  
+  <!-- Red lightning bolt -->
+  <path d="M20 12 L32 24 L28 24 L36 44 L24 32 L28 32 Z" fill="#FF0000"/>
+</svg>
