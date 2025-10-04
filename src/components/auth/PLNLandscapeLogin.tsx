@@ -35,7 +35,7 @@ export default function PLNLandscapeLogin() {
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-16 h-16 flex items-center justify-center">
                   <img 
-                    src="/images/logo/pln-icon-plus-logo.svg" 
+                    src="/images/logo/pln-icon-plus-logo.png" 
                     alt="PLN Icon Plus Logo" 
                     className="w-full h-full object-contain"
                   />
