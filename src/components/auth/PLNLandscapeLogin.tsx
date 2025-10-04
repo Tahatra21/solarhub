@@ -5,6 +5,8 @@ import { Eye, EyeOff, Zap, Wifi, Database, Cloud, Leaf, Video } from 'lucide-rea
 export default function PLNLandscapeLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 flex items-center justify-center p-0 overflow-hidden relative">
@@ -29,8 +31,8 @@ export default function PLNLandscapeLogin() {
         <div className="w-full max-w-7xl bg-white rounded-3xl shadow-2xl overflow-hidden flex" style={{height: '85vh'}}>
           
           {/* Left Side - Login Form */}
-          <div className="w-2/5 p-12 flex flex-col justify-center bg-gradient-to-br from-white to-blue-50">
-            <div className="max-w-md mx-auto w-full">
+          <div className="w-2/5 p-12 flex flex-col justify-center bg-gradient-to-br from-white to-blue-50 relative z-20">
+            <div className="max-w-md mx-auto w-full relative z-20">
               {/* Logo */}
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-35 h-35 flex items-center justify-center">
@@ -58,10 +60,11 @@ export default function PLNLandscapeLogin() {
                     type="text"
                     name="username"
                     placeholder="Username"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition relative z-10"
                     autoComplete="username"
                     required
-                    style={{ pointerEvents: 'auto', zIndex: 1 }}
                   />
                 </div>
 
@@ -75,10 +78,11 @@ export default function PLNLandscapeLogin() {
                       type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Enter your password"
-                      className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition relative z-10"
                       autoComplete="current-password"
                       required
-                      style={{ pointerEvents: 'auto', zIndex: 1 }}
                     />
                     <button
                       type="button"
