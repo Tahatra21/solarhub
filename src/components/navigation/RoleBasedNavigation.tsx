@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Package, 
-  Cycle, 
+  RotateCcw, 
   Monitor, 
   BarChart3, 
   Users, 
@@ -77,7 +77,7 @@ export default function RoleBasedNavigation() {
     const icons: Record<string, React.ComponentType<any>> = {
       dashboard: LayoutDashboard,
       box: Package,
-      cycle: Cycle,
+      cycle: RotateCcw,
       monitor: Monitor,
       chart: BarChart3,
       users: Users,
