@@ -28,13 +28,27 @@ export default function UsersPage() {
     try {
       setLoading(true);
       console.log('🔍 Fetching users from API...');
+      console.log('🔍 Current page:', currentPage);
+      console.log('🔍 Search query:', searchQuery);
       
-      const response = await fetch(`/api/users/master?page=${currentPage}&limit=10&search=${searchQuery}`);
+      const url = `/api/users/master?page=${currentPage}&limit=10&search=${searchQuery}`;
+      console.log('🔍 API URL:', url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include cookies for authentication
+      });
       
       console.log('🔍 API Response status:', response.status);
+      console.log('🔍 API Response headers:', response.headers);
       
       if (!response.ok) {
-        throw new Error(`Failed to fetch users: ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ API Error Response:', errorText);
+        throw new Error(`Failed to fetch users: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
@@ -46,12 +60,15 @@ export default function UsersPage() {
         setTotalPages(Math.ceil(data.total / 10) || 1);
         setTotalItems(data.total || 0);
         console.log('✅ Users loaded:', data.users.length);
+        console.log('✅ Total users:', data.total);
+        console.log('✅ Total pages:', Math.ceil(data.total / 10));
       } else {
         console.error('❌ Invalid API response structure:', data);
         setUsers([]);
       }
     } catch (error) {
       console.error('❌ Error fetching users:', error);
+      console.error('❌ Error details:', error instanceof Error ? error.message : 'Unknown error');
       setUsers([]);
     } finally {
       setLoading(false);
