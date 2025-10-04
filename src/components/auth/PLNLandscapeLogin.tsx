@@ -20,6 +20,8 @@ export default function PLNLandscapeLogin() {
     setMessage('');
 
     try {
+      console.log('Sending login request:', { username: username.trim(), password: '***' });
+      
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
@@ -31,7 +33,11 @@ export default function PLNLandscapeLogin() {
         }),
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (data.success) {
         setMessage('Login berhasil! Redirecting...');
