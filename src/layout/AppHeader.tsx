@@ -3,6 +3,7 @@
 import UserDropdown from "@/components/header/UserDropdown";
 import NotificationBell from "@/components/NotificationBell";
 import RoleBasedNavigation from "@/components/navigation/RoleBasedNavigation";
+import DynamicNavigation from "@/components/navigation/DynamicNavigation";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState ,useEffect,useRef} from "react";
@@ -147,8 +148,8 @@ const AppHeader: React.FC = () => {
             </Link>
           </div>
 
-          {/* Role-Based Navigation */}
-          <RoleBasedNavigation />
+               {/* Dynamic Role-Based Navigation */}
+               <DynamicNavigation />
 
           {/* User Functions - Always Visible */}
           <div className="flex items-center gap-1 2xsm:gap-2 sm:gap-3">

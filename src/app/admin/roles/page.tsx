@@ -17,6 +17,12 @@ export default function RolesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [formData, setFormData] = useState({ nama_role: '', description: '' });
 
   // Fetch roles data
   const fetchRoles = async () => {
@@ -57,21 +63,81 @@ export default function RolesPage() {
   };
 
   const handleViewDetails = (role: Role) => {
-    alert(`View details for: ${role.nama_role}`);
+    setSelectedRole(role);
+    setModalType('view');
+    setFormData({ nama_role: role.nama_role, description: '' });
+    setShowModal(true);
   };
 
   const handleEdit = (role: Role) => {
-    alert(`Edit: ${role.nama_role}`);
+    setSelectedRole(role);
+    setModalType('edit');
+    setFormData({ nama_role: role.nama_role, description: '' });
+    setShowModal(true);
   };
 
-  const handleDelete = (role: Role) => {
+  const handleDelete = async (role: Role) => {
     if (confirm(`Are you sure you want to delete ${role.nama_role}?`)) {
-      alert(`Delete: ${role.nama_role}`);
+      try {
+        const response = await fetch(`/api/roles/${role.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          alert('Role deleted successfully!');
+          fetchRoles(); // Refresh the list
+        } else {
+          alert('Failed to delete role');
+        }
+      } catch (error) {
+        console.error('Error deleting role:', error);
+        alert('Error deleting role');
+      }
     }
   };
 
   const handleAdd = () => {
-    alert('Add new role');
+    setSelectedRole(null);
+    setModalType('add');
+    setFormData({ nama_role: '', description: '' });
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const url = modalType === 'add' ? '/api/roles' : `/api/roles/${selectedRole?.id}`;
+      const method = modalType === 'add' ? 'POST' : 'PUT';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert(`${modalType === 'add' ? 'Role created' : 'Role updated'} successfully!`);
+        setShowModal(false);
+        fetchRoles(); // Refresh the list
+      } else {
+        alert(`Failed to ${modalType === 'add' ? 'create' : 'update'} role`);
+      }
+    } catch (error) {
+      console.error(`Error ${modalType === 'add' ? 'creating' : 'updating'} role:`, error);
+      alert(`Error ${modalType === 'add' ? 'creating' : 'updating'} role`);
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedRole(null);
+    setFormData({ nama_role: '', description: '' });
   };
 
   return (
@@ -232,6 +298,115 @@ export default function RolesPage() {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {modalType === 'add' ? 'Add New Role' : 
+                   modalType === 'edit' ? 'Edit Role' : 'View Role'}
+                </h3>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {modalType === 'view' ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Role Name
+                    </label>
+                    <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100">
+                      {formData.nama_role}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Description
+                    </label>
+                    <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100">
+                      {formData.description || 'No description'}
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={closeModal}
+                      className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Role Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.nama_role}
+                      onChange={(e) => setFormData({ ...formData, nama_role: e.target.value })}
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                      placeholder="Enter role name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                      placeholder="Enter role description"
+                      rows={3}
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-3">
+                    <button
+                      type="button"
+                      onClick={closeModal}
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                      {modalType === 'add' ? 'Create Role' : 'Update Role'}
+                    </button>
+                    {modalType === 'edit' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setModalType('permissions');
+                          // Navigate to permissions page
+                          window.location.href = `/admin/role-permissions?roleId=${selectedRole?.id}&roleName=${selectedRole?.nama_role}`;
+                        }}
+                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                      >
+                        Manage Permissions
+                      </button>
+                    )}
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

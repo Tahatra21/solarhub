@@ -1,9 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from '@/lib/database';
 
+// Simple in-memory cache to reduce database calls
+let notificationCache: any = null;
+let cacheTimestamp: number = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+
 export async function GET(request: NextRequest) {
+  // Check cache first
+  const now = Date.now();
+  if (notificationCache && (now - cacheTimestamp) < CACHE_DURATION) {
+    return NextResponse.json({
+      success: true,
+      data: notificationCache,
+      message: 'Notifications retrieved from cache',
+      cached: true
+    });
+  }
+
+  let pool;
   try {
-    const pool = getPool();
+    pool = getPool();
     
     // Query dengan penanganan error yang lebih robust dan filter 30 hari
     const query = `
@@ -65,10 +82,15 @@ export async function GET(request: NextRequest) {
       days_until_expiry: typeof row.days_until_expiry === 'number' ? row.days_until_expiry : 999
     }));
 
+    // Update cache
+    notificationCache = notifications;
+    cacheTimestamp = now;
+
     return NextResponse.json({
       success: true,
       data: notifications,
-      message: 'Notifications retrieved successfully'
+      message: 'Notifications retrieved successfully',
+      cached: false
     });
 
   } catch (error) {
@@ -82,6 +104,11 @@ export async function GET(request: NextRequest) {
       message: 'No notifications available',
       error: error instanceof Error ? error.message : 'Database query failed'
     });
+  } finally {
+    // Ensure proper cleanup
+    if (pool) {
+      // Connection pooling should handle cleanup automatically
+    }
   }
 }
 
@@ -125,6 +152,10 @@ export async function DELETE(request: NextRequest) {
     if (clearAll === 'true') {
       // Clear all notifications - menggunakan localStorage di frontend untuk persistence
       console.log('All notifications cleared');
+      
+      // Clear cache when notifications are cleared
+      notificationCache = null;
+      cacheTimestamp = 0;
       
       return NextResponse.json({
         success: true,

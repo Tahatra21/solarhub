@@ -9,6 +9,19 @@ export enum UserRole {
   ADMIN = 'Admin'          // Full access including Administrator menu
 }
 
+// Helper function to normalize role (handle both string and number)
+export function normalizeRole(role: string | number): string {
+  if (typeof role === 'number') {
+    switch (role) {
+      case 1: return UserRole.ADMIN;
+      case 2: return UserRole.CONTRIBUTOR;
+      case 3: return UserRole.USER;
+      default: return UserRole.USER;
+    }
+  }
+  return role;
+}
+
 export enum Permission {
   // Read permissions
   READ_DASHBOARD = 'read:dashboard',
@@ -204,10 +217,18 @@ export function canAccessMenu(userRole: string, menuPath: string): boolean {
 export function getAvailableMenus(userRole: string): Array<{path: string, label: string, icon: string}> {
   const baseMenus = [
     { path: '/admin', label: 'Dashboard', icon: 'dashboard' },
-    { path: '/admin/products', label: 'Product Catalog', icon: 'box' },
+    { path: '/admin/product', label: 'Product Catalog', icon: 'box' },
     { path: '/admin/lifecycle', label: 'Lifecycle Analyst', icon: 'cycle' },
-    { path: '/admin/monitoring', label: 'Monitoring', icon: 'monitor' },
-    { path: '/admin/reports', label: 'Reports', icon: 'chart' }
+    { 
+      path: '/admin/cusol-hub', 
+      label: 'Solar HUB', 
+      icon: 'monitor',
+      subItems: [
+        { path: '/admin/cusol-hub/monitoring-crjr', label: 'Monitoring CR/JR' },
+        { path: '/admin/cusol-hub/monitoring-license', label: 'Monitoring License' },
+        { path: '/admin/cusol-hub/monitoring-run-program', label: 'Monitoring Run Inisiatif' }
+      ]
+    }
   ];
 
   // Add admin menus for ADMIN role

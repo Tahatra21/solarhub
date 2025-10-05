@@ -425,7 +425,7 @@ const MonitoringCRJRPage: React.FC = () => {
     <div className="p-6 space-y-6">
       {/* Stats Cards */}
       {statistics && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -446,7 +446,7 @@ const MonitoringCRJRPage: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Change Request</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {statistics.byJenis.find(j => j.jenis === 'Change Request')?.count || 0}
+                  {statistics.byJenis.find(j => j.jenis === 'CR')?.count || 0}
                 </p>
               </div>
             </div>
@@ -460,7 +460,21 @@ const MonitoringCRJRPage: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Job Request</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {statistics.byJenis.find(j => j.jenis === 'Job Request')?.count || 0}
+                  {statistics.byJenis.find(j => j.jenis === 'JR')?.count || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <AlertCircle className="w-6 h-6 text-orange-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Service Request</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {statistics.byJenis.find(j => j.jenis === 'SR')?.count || 0}
                 </p>
               </div>
             </div>

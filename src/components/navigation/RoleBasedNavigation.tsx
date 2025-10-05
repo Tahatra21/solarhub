@@ -15,7 +15,7 @@ import {
   FileText,
   ChevronDown
 } from 'lucide-react';
-import { getAvailableMenus, canAccessAdmin, UserRole } from '@/utils/rbac';
+import { getAvailableMenus, canAccessAdmin, UserRole, normalizeRole } from '@/utils/rbac';
 
 interface NavigationItem {
   path: string;
@@ -32,6 +32,8 @@ interface User {
 export default function RoleBasedNavigation() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [dropdownTimer, setDropdownTimer] = useState<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -95,8 +97,9 @@ export default function RoleBasedNavigation() {
     return pathname.startsWith(path);
   };
 
-  const getRoleColor = (role: string) => {
-    switch (role) {
+  const getRoleColor = (role: string | number) => {
+    const normalizedRole = normalizeRole(role);
+    switch (normalizedRole) {
       case UserRole.ADMIN:
         return 'bg-red-50 text-red-700 border-red-200';
       case UserRole.CONTRIBUTOR:
@@ -108,8 +111,9 @@ export default function RoleBasedNavigation() {
     }
   };
 
-  const getRoleBadge = (role: string) => {
-    switch (role) {
+  const getRoleBadge = (role: string | number) => {
+    const normalizedRole = normalizeRole(role);
+    switch (normalizedRole) {
       case UserRole.ADMIN:
         return '🔴 Admin';
       case UserRole.CONTRIBUTOR:
@@ -136,9 +140,9 @@ export default function RoleBasedNavigation() {
           </button>
         </Link>
 
-        <Link href="/admin/products">
+        <Link href="/admin/product">
           <button className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-            isActive('/admin/products') 
+            isActive('/admin/product') 
               ? 'bg-blue-50 text-blue-700' 
               : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
           }`}>
@@ -158,83 +162,233 @@ export default function RoleBasedNavigation() {
           </button>
         </Link>
 
-        <Link href="/admin/monitoring">
-          <button className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-            isActive('/admin/monitoring') 
-              ? 'bg-blue-50 text-blue-700' 
-              : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-          }`}>
+        {/* Solar HUB Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setActiveDropdown(activeDropdown === 'solar-hub' ? null : 'solar-hub')}
+            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              isActive('/admin/cusol-hub') || activeDropdown === 'solar-hub'
+                ? 'bg-blue-50 text-blue-700'
+                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+            }`}
+          >
             <Monitor className="w-4 h-4 mr-1.5" />
-            Monitoring
+            Solar HUB
+            <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 ${
+              activeDropdown === 'solar-hub' ? 'rotate-180' : ''
+            }`} />
           </button>
-        </Link>
 
-        <Link href="/admin/reports">
-          <button className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-            isActive('/admin/reports') 
-              ? 'bg-blue-50 text-blue-700' 
-              : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-          }`}>
-            <BarChart3 className="w-4 h-4 mr-1.5" />
-            Reports
-          </button>
-        </Link>
-
-        {/* Administrator Menu - Only for ADMIN role */}
-        {canAccessAdmin(user.role) && (
-          <div className="relative group">
-            <button className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-              pathname.startsWith('/admin/users') || 
-              pathname.startsWith('/admin/roles') || 
-              pathname.startsWith('/admin/settings') || 
-              pathname.startsWith('/admin/audit')
-                ? 'bg-red-50 text-red-700' 
-                : 'text-gray-700 hover:text-red-600 hover:bg-gray-50'
-            }`}>
-              <Shield className="w-4 h-4 mr-1.5" />
-              Administrator
-              <ChevronDown className="w-4 h-4 ml-1" />
-            </button>
-
-            {/* Dropdown Menu */}
-            <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-              <div className="py-1">
-                <Link href="/admin/users">
-                  <div className={`flex items-center px-4 py-2 text-sm hover:bg-gray-50 ${
-                    isActive('/admin/users') ? 'text-red-600 bg-red-50' : 'text-gray-700'
-                  }`}>
-                    <Users className="w-4 h-4 mr-3" />
-                    User Management
-                  </div>
+          {activeDropdown === 'solar-hub' && (
+            <div className="absolute top-full left-0 mt-2 w-56 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200/30 z-[9999]">
+              <div className="py-2">
+                <Link href="/admin/cusol-hub/monitoring-crjr" passHref>
+                  <button
+                    onClick={() => setActiveDropdown(null)}
+                    className={`w-full text-left px-4 py-2 text-sm transition-all duration-200 ${
+                      isActive('/admin/cusol-hub/monitoring-crjr')
+                        ? 'bg-blue-50 text-blue-700 font-medium'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                  >
+                    Monitoring CR/JR
+                  </button>
                 </Link>
-                <Link href="/admin/roles">
-                  <div className={`flex items-center px-4 py-2 text-sm hover:bg-gray-50 ${
-                    isActive('/admin/roles') ? 'text-red-600 bg-red-50' : 'text-gray-700'
-                  }`}>
-                    <Shield className="w-4 h-4 mr-3" />
-                    Role Management
-                  </div>
+                <Link href="/admin/cusol-hub/monitoring-license" passHref>
+                  <button
+                    onClick={() => setActiveDropdown(null)}
+                    className={`w-full text-left px-4 py-2 text-sm transition-all duration-200 ${
+                      isActive('/admin/cusol-hub/monitoring-license')
+                        ? 'bg-blue-50 text-blue-700 font-medium'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                  >
+                    Monitoring License
+                  </button>
                 </Link>
-                <Link href="/admin/settings">
-                  <div className={`flex items-center px-4 py-2 text-sm hover:bg-gray-50 ${
-                    isActive('/admin/settings') ? 'text-red-600 bg-red-50' : 'text-gray-700'
-                  }`}>
-                    <Settings className="w-4 h-4 mr-3" />
-                    System Settings
-                  </div>
-                </Link>
-                <Link href="/admin/audit">
-                  <div className={`flex items-center px-4 py-2 text-sm hover:bg-gray-50 ${
-                    isActive('/admin/audit') ? 'text-red-600 bg-red-50' : 'text-gray-700'
-                  }`}>
-                    <FileText className="w-4 h-4 mr-3" />
-                    Audit Logs
-                  </div>
+                <Link href="/admin/cusol-hub/monitoring-run-program" passHref>
+                  <button
+                    onClick={() => setActiveDropdown(null)}
+                    className={`w-full text-left px-4 py-2 text-sm transition-all duration-200 ${
+                      isActive('/admin/cusol-hub/monitoring-run-program')
+                        ? 'bg-blue-50 text-blue-700 font-medium'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                  >
+                    Monitoring Run Inisiatif
+                  </button>
                 </Link>
               </div>
             </div>
+          )}
+        </div>
+
+
+        {/* Administrator Menu - Only for ADMIN role */}
+        {normalizeRole(user.role) === UserRole.ADMIN && (
+          <div className="relative">
+            <button
+              onClick={() => setActiveDropdown(activeDropdown === 'administrator' ? null : 'administrator')}
+              className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                pathname.startsWith('/admin/kategori') ||
+                pathname.startsWith('/admin/segmen') ||
+                pathname.startsWith('/admin/stage') ||
+                pathname.startsWith('/admin/interval') ||
+                pathname.startsWith('/admin/devhistori') ||
+                pathname.startsWith('/admin/users') || 
+                pathname.startsWith('/admin/roles') || 
+                pathname.startsWith('/admin/role-permissions') ||
+                pathname.startsWith('/admin/settings') || 
+                pathname.startsWith('/admin/audit') ||
+                activeDropdown === 'administrator'
+                  ? 'bg-red-50 text-red-700' 
+                  : 'text-gray-700 hover:text-red-600 hover:bg-gray-50'
+              }`}
+            >
+              <Shield className="w-4 h-4 mr-1.5" />
+              Administrator
+              <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 ${
+                activeDropdown === 'administrator' ? 'rotate-180' : ''
+              }`} />
+            </button>
+
+            {activeDropdown === 'administrator' && (
+              <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200/30 z-[9999]">
+                <div className="py-2">
+                  {/* Management Functions */}
+                  <div className="px-3 py-2">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                      Management Functions
+                    </div>
+                    <div className="space-y-1">
+                      <Link href="/admin/kategori">
+                        <button
+                          onClick={() => setActiveDropdown(null)}
+                          className={`w-full text-left px-3 py-2 text-sm transition-all duration-200 rounded-lg ${
+                            isActive('/admin/kategori')
+                              ? 'bg-red-50 text-red-700 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          Kategori Management
+                        </button>
+                      </Link>
+                      <Link href="/admin/segmen">
+                        <button
+                          onClick={() => setActiveDropdown(null)}
+                          className={`w-full text-left px-3 py-2 text-sm transition-all duration-200 rounded-lg ${
+                            isActive('/admin/segmen')
+                              ? 'bg-red-50 text-red-700 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          Segment Management
+                        </button>
+                      </Link>
+                      <Link href="/admin/stage">
+                        <button
+                          onClick={() => setActiveDropdown(null)}
+                          className={`w-full text-left px-3 py-2 text-sm transition-all duration-200 rounded-lg ${
+                            isActive('/admin/stage')
+                              ? 'bg-red-50 text-red-700 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          Stage Management
+                        </button>
+                      </Link>
+                      <Link href="/admin/interval">
+                        <button
+                          onClick={() => setActiveDropdown(null)}
+                          className={`w-full text-left px-3 py-2 text-sm transition-all duration-200 rounded-lg ${
+                            isActive('/admin/interval')
+                              ? 'bg-red-50 text-red-700 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          Interval Management
+                        </button>
+                      </Link>
+                      <Link href="/admin/devhistori">
+                        <button
+                          onClick={() => setActiveDropdown(null)}
+                          className={`w-full text-left px-3 py-2 text-sm transition-all duration-200 rounded-lg ${
+                            isActive('/admin/devhistori')
+                              ? 'bg-red-50 text-red-700 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          Dev Management
+                        </button>
+                      </Link>
+                      <Link href="/admin/users">
+                        <button
+                          onClick={() => setActiveDropdown(null)}
+                          className={`w-full text-left px-3 py-2 text-sm transition-all duration-200 rounded-lg ${
+                            isActive('/admin/users')
+                              ? 'bg-red-50 text-red-700 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          User Management
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                  
+                  {/* Divider */}
+                  <div className="border-t border-gray-200 mx-3 my-2"></div>
+                  
+                  {/* System Settings */}
+                  <div className="px-3 py-2">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                      System Settings
+                    </div>
+                    <div className="space-y-1">
+                      <Link href="/admin/roles">
+                        <button
+                          onClick={() => setActiveDropdown(null)}
+                          className={`w-full text-left px-3 py-2 text-sm transition-all duration-200 rounded-lg ${
+                            isActive('/admin/roles')
+                              ? 'bg-red-50 text-red-700 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          Role Management
+                        </button>
+                      </Link>
+                      <Link href="/admin/role-permissions">
+                        <button
+                          onClick={() => setActiveDropdown(null)}
+                          className={`w-full text-left px-3 py-2 text-sm transition-all duration-200 rounded-lg ${
+                            isActive('/admin/role-permissions')
+                              ? 'bg-red-50 text-red-700 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          Role Permissions
+                        </button>
+                      </Link>
+                      <Link href="/admin/audit">
+                        <button
+                          onClick={() => setActiveDropdown(null)}
+                          className={`w-full text-left px-3 py-2 text-sm transition-all duration-200 rounded-lg ${
+                            isActive('/admin/audit')
+                              ? 'bg-red-50 text-red-700 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          Audit Logs
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
+
 
         {/* User Role Badge */}
         <div className={`ml-4 px-3 py-1 rounded-full text-xs font-medium border ${getRoleColor(user.role)}`}>

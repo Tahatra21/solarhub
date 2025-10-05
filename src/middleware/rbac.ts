@@ -6,7 +6,7 @@ import { canAccessMenu, UserRole } from "@/utils/rbac";
  * RBAC Middleware untuk Solution Architect HUB
  * Memvalidasi akses berdasarkan role user
  */
-export function rbacMiddleware(req: NextRequest) {
+export async function rbacMiddleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   
   // Skip RBAC untuk public routes dan static files
@@ -34,8 +34,8 @@ export function rbacMiddleware(req: NextRequest) {
   }
 
   try {
-    // Verify token dan get user info
-    const decoded = verifyToken(token);
+          // Verify token dan get user info
+          const decoded = await verifyToken(token);
     
     if (!decoded) {
       console.log('❌ Invalid token');
@@ -53,7 +53,7 @@ export function rbacMiddleware(req: NextRequest) {
 
     // Check role-based access only for admin routes
     if (pathname.startsWith('/admin')) {
-      const userRole = decoded.role;
+      const userRole = decoded.role as string;
       const hasAccess = canAccessMenu(userRole, pathname);
 
       if (!hasAccess) {
@@ -64,9 +64,9 @@ export function rbacMiddleware(req: NextRequest) {
 
     // Add user role to headers for use in components
     const response = NextResponse.next();
-    response.headers.set('x-user-role', decoded.role || '');
-    response.headers.set('x-user-id', decoded.id?.toString() || '');
-    response.headers.set('x-user-username', decoded.username || '');
+    response.headers.set('x-user-role', (decoded.role as string) || '');
+    response.headers.set('x-user-id', (decoded.id as number)?.toString() || '');
+    response.headers.set('x-user-username', (decoded.username as string) || '');
 
     return response;
 
@@ -82,7 +82,7 @@ export function rbacMiddleware(req: NextRequest) {
 /**
  * API RBAC Middleware untuk melindungi API endpoints
  */
-export function apiRbacMiddleware(req: NextRequest, requiredPermission?: string) {
+export async function apiRbacMiddleware(req: NextRequest, requiredPermission?: string) {
   const token = req.cookies.get("token")?.value;
   
   if (!token) {
@@ -90,7 +90,7 @@ export function apiRbacMiddleware(req: NextRequest, requiredPermission?: string)
   }
 
   try {
-    const decoded = verifyToken(token);
+    const decoded = await verifyToken(token);
     
     if (!decoded || !decoded.role) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
@@ -99,7 +99,7 @@ export function apiRbacMiddleware(req: NextRequest, requiredPermission?: string)
     // Check specific permission if required
     if (requiredPermission) {
       const { hasPermission } = require('@/utils/rbac');
-      if (!hasPermission(decoded.role, requiredPermission)) {
+      if (!hasPermission(decoded.role as string, requiredPermission)) {
         return NextResponse.json({ 
           error: 'Insufficient permissions',
           required: requiredPermission,
@@ -110,9 +110,9 @@ export function apiRbacMiddleware(req: NextRequest, requiredPermission?: string)
 
     // Add user info to request headers
     const response = NextResponse.next();
-    response.headers.set('x-user-role', decoded.role);
-    response.headers.set('x-user-id', decoded.id?.toString() || '');
-    response.headers.set('x-user-username', decoded.username || '');
+    response.headers.set('x-user-role', decoded.role as string);
+    response.headers.set('x-user-id', (decoded.id as number)?.toString() || '');
+    response.headers.set('x-user-username', decoded.username as string || '');
 
     return response;
 

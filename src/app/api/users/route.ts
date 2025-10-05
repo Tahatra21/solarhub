@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await verifyToken(token);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -69,13 +69,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await verifyToken(token);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage users
-    if (!canManageUsers(decoded.role)) {
+    if (!canManageUsers(decoded.role as string)) {
       return NextResponse.json({ 
         error: 'Insufficient permissions. Only Admin can manage users.',
         required: 'Admin role',
@@ -142,13 +142,13 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await verifyToken(token);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage users
-    if (!canManageUsers(decoded.role)) {
+    if (!canManageUsers(decoded.role as string)) {
       return NextResponse.json({ 
         error: 'Insufficient permissions. Only Admin can manage users.',
         required: 'Admin role',
@@ -261,13 +261,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await verifyToken(token);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage users
-    if (!canManageUsers(decoded.role)) {
+    if (!canManageUsers(decoded.role as string)) {
       return NextResponse.json({ 
         error: 'Insufficient permissions. Only Admin can manage users.',
         required: 'Admin role',

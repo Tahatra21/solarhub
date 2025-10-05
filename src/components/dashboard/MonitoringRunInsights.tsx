@@ -70,15 +70,19 @@ const MonitoringRunInsights = () => {
           };
           
           data.byStatus?.forEach((status: any) => {
-            const statusName = status.overall_status?.toLowerCase();
-            if (statusName === 'completed') {
+            const statusName = status.overall_status?.toUpperCase();
+            console.log('🔍 Processing status:', statusName, 'count:', status.count);
+            
+            if (statusName === 'COMPLETED') {
               statusCounts.completed = parseInt(status.count);
-            } else if (statusName === 'on track') {
+            } else if (statusName === 'ON TRACK') {
               statusCounts.onTrack = parseInt(status.count);
-            } else if (statusName === 'lagging') {
+            } else if (statusName === 'LAGGING') {
               statusCounts.lagging = parseInt(status.count);
             }
           });
+          
+          console.log('📊 Status counts processed:', statusCounts);
           
           // Calculate at risk programs (lagging + high priority)
           const atRiskPrograms = statusCounts.lagging;
@@ -131,6 +135,13 @@ const MonitoringRunInsights = () => {
   };
 
   const formatCurrency = (amount: number) => {
+    if (amount >= 1000000000) {
+      return `Rp ${(amount / 1000000000).toFixed(1)}B`;
+    } else if (amount >= 1000000) {
+      return `Rp ${(amount / 1000000).toFixed(1)}M`;
+    } else if (amount >= 1000) {
+      return `Rp ${(amount / 1000).toFixed(1)}K`;
+    }
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',

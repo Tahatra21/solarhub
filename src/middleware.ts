@@ -9,7 +9,7 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   
   // Apply RBAC middleware first
-  const rbacResponse = rbacMiddleware(req);
+  const rbacResponse = await rbacMiddleware(req);
   if (rbacResponse.status !== 200) {
     return rbacResponse;
   }

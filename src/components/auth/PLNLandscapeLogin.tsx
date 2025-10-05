@@ -56,6 +56,14 @@ export default function PLNLandscapeLogin() {
     }
   };
 
+  // Handle Enter key press
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleLogin();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 flex items-center justify-center p-0 overflow-hidden relative">
       {/* Animated Background Grid */}
@@ -110,6 +118,7 @@ export default function PLNLandscapeLogin() {
                     placeholder="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    onKeyDown={handleKeyPress}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition relative z-10"
                     autoComplete="username"
                     required
@@ -128,6 +137,7 @@ export default function PLNLandscapeLogin() {
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      onKeyDown={handleKeyPress}
                       className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none transition relative z-10"
                       autoComplete="current-password"
                       required
